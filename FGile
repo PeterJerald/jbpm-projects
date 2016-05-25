@@ -1,87 +1,43 @@
-package vzdemo.logging;
 
 
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.api.runtime.process.WorkItemManager;
-import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
+		System.out.println("COmes here====================");
+		// String fileToLog = (String) workItem.getParameter("FileToLog");
+		String message = "This is sample Message ";
+		System.out.println("COmes here====================" + message);
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.BufferedReader;
+		/*
+		 * Send email. The ServiceRegistry class is an example class
+		 * implementing the task business logic.
+		 */
 
-public class CustomLogger implements WorkItemHandler {
-    
-     
-    
-  public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
-     
-    System.out.println("COmes here====================");
-    String fileToLog = (String) workItem.getParameter("FileToLog");
-    String message = (String) workItem.getParameter("Message");
-     System.out.println("COmes here===================="+message);
+		BufferedWriter bw = null;
 
-/* 
-  Send email.
-  The ServiceRegistry class is an example class implementing the task business logic. 
-*/
-    
-    BufferedWriter bw = null;
-    BufferedReader br = null;
+		// if file doesnt exists, then create it
 
-	// if file doesnt exists, then create it
-	
-	try {   
-	    File file = new File("D:\\LogFile.log");
-		if (!file.exists()) {
-			file.createNewFile();
-		}else {
-		    
-           
-              br =  new BufferedReader(new FileReader(file));
-               StringBuilder sb = new StringBuilder();
-               String line = br.readLine();
-                while (line != null) {
-                    sb.append(line);
-                    sb.append("\n");
-          
-                }
-		FileWriter fw = new FileWriter(file.getAbsoluteFile());
-		bw = new BufferedWriter(fw);
-		
-		bw.write(sb.toString()+" "+message);
-	
-	
-                }
-	}catch(Exception e){
-		e.printStackTrace();
-	}finally {
 		try {
-			if(bw != null){
-				bw.close();
-				br.close();
-				
+			File file = new File("C:\\MyDocs\\LogFile.log");
+			if (!file.exists()) {
+				file.createNewFile();
 			}
-		} catch(Exception e){
+
+			FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
+			bw = new BufferedWriter(fw);
+			bw.newLine();
+			bw.write(message);
+
+		} catch (Exception e) {
 			e.printStackTrace();
-			
+		} finally {
+			try {
+				if (bw != null) {
+					bw.close();
+
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+
+			}
+
 		}
-		
-	}
+
 	
-	
-
-/* 
-  Notify manager that work item has been completed.
-  The completeWorkItem() call completes the work item execution.
-*/
-    manager.completeWorkItem(workItem.getId(), null);
-  }
-
-  public void abortWorkItem(WorkItem workItem, WorkItemManager manager) {
-  // Do nothing, notifications cannot be aborted
-  }
-
-}
